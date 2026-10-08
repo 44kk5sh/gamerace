@@ -16,3 +16,3400 @@ bin-release/
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               minimum-scale=1.0,
+               user-scalable=no,
+               viewport-fit=cover">
+
+<meta name="apple-mobile-web-app-capable"
+      content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent">
+
+<meta name="apple-mobile-web-app-title"
+      content="Turbo Racer">
+
+<title>Turbo Racer</title>
+
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =====================================================
+   BODY
+===================================================== */
+
+html,
+body {
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #111;
+
+    font-family: Arial, sans-serif;
+
+    position: fixed;
+    inset: 0;
+
+    touch-action: none;
+
+    overscroll-behavior: none;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+
+}
+
+
+/* =====================================================
+   GAME
+===================================================== */
+
+#game {
+
+    position: relative;
+
+    width: min(100vw, 500px);
+
+    height: 100vh;
+    height: 100dvh;
+
+    overflow: hidden;
+
+    background: #228b22;
+
+    border: 4px solid #fff;
+
+    touch-action: none;
+
+}
+
+
+/* =====================================================
+   STRASSE
+===================================================== */
+
+#road {
+
+    position: absolute;
+
+    left: 12.5%;
+
+    width: 75%;
+
+    height: 100%;
+
+    background: #444;
+
+}
+
+
+/* =====================================================
+   SEITENSTREIFEN
+===================================================== */
+
+.side {
+
+    position: absolute;
+
+    width: 12.5%;
+
+    height: 100%;
+
+    background: #238b45;
+
+}
+
+
+.side.left {
+    left: 0;
+}
+
+
+.side.right {
+    right: 0;
+}
+
+
+/* =====================================================
+   FAHRBAHNMARKIERUNGEN
+===================================================== */
+
+.line {
+
+    position: absolute;
+
+    width: 8px;
+
+    height: 80px;
+
+    background: white;
+
+    left: calc(50% - 54px);
+
+}
+
+
+.line.right {
+
+    left: calc(50% + 46px);
+
+}
+
+
+/* =====================================================
+   SPIELER
+===================================================== */
+
+#player {
+
+    position: absolute;
+
+    width: 45px;
+
+    height: 80px;
+
+    bottom: 40px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    background: #e60000;
+
+    border: 3px solid #222;
+
+    border-radius:
+        10px
+        10px
+        6px
+        6px;
+
+    z-index: 10;
+
+    transition:
+        transform .05s linear;
+
+}
+
+
+/* Räder */
+
+#player::before,
+#player::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 9px;
+
+    height: 18px;
+
+    background: #111;
+
+    top: 12px;
+
+    border-radius: 3px;
+
+}
+
+
+#player::before {
+    left: -7px;
+}
+
+
+#player::after {
+    right: -7px;
+}
+
+
+/* Fenster */
+
+.window {
+
+    position: absolute;
+
+    width: 29px;
+
+    height: 25px;
+
+    background: #8fd8ff;
+
+    left: 5px;
+
+    top: 8px;
+
+    border-radius: 5px;
+
+    border: 2px solid #222;
+
+}
+
+
+/* =====================================================
+   GEGNER
+===================================================== */
+
+.enemy {
+
+    position: absolute;
+
+    width: 45px;
+
+    height: 80px;
+
+    background: #0066ff;
+
+    border: 3px solid #222;
+
+    border-radius:
+        10px
+        10px
+        6px
+        6px;
+
+    z-index: 5;
+
+}
+
+
+/* Räder */
+
+.enemy::before,
+.enemy::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 9px;
+
+    height: 18px;
+
+    background: #111;
+
+    bottom: 12px;
+
+    border-radius: 3px;
+
+}
+
+
+.enemy::before {
+    left: -7px;
+}
+
+
+.enemy::after {
+    right: -7px;
+}
+
+
+/* =====================================================
+   HUD
+===================================================== */
+
+#hud {
+
+    position: absolute;
+
+    top:
+        calc(
+            10px +
+            env(safe-area-inset-top)
+        );
+
+    left:
+        calc(
+            10px +
+            env(safe-area-inset-left)
+        );
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    z-index: 20;
+
+    text-shadow:
+        2px 2px 3px black;
+
+    pointer-events: none;
+
+}
+
+
+#speed {
+
+    margin-top: 5px;
+
+    font-size: 16px;
+
+}
+
+
+/* =====================================================
+   SOUND HUD
+===================================================== */
+
+#soundButton {
+
+    position: absolute;
+
+    top:
+        calc(
+            10px +
+            env(safe-area-inset-top)
+        );
+
+    right:
+        calc(
+            10px +
+            env(safe-area-inset-right)
+        );
+
+    width: 48px;
+
+    height: 48px;
+
+    min-width: 48px;
+    min-height: 48px;
+
+    margin: 0;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,0,0,.6);
+
+    border:
+        2px solid white;
+
+    color: white;
+
+    font-size: 22px;
+
+    z-index: 50;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+
+}
+
+
+#soundButton:active {
+
+    transform: scale(.9);
+
+}
+
+
+/* =====================================================
+   MENU
+===================================================== */
+
+#menu {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,.82);
+
+    color: white;
+
+    z-index: 100;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    padding:
+        30px
+        calc(
+            20px +
+            env(safe-area-inset-right)
+        )
+        30px
+        calc(
+            20px +
+            env(safe-area-inset-left)
+        );
+
+    touch-action: auto;
+
+}
+
+
+#menu h1 {
+
+    font-size:
+        clamp(
+            36px,
+            11vw,
+            55px
+        );
+
+    margin-bottom: 15px;
+
+    color: #ffcc00;
+
+    text-shadow:
+        0 0 15px
+        rgba(255,204,0,.5);
+
+}
+
+
+#menu p {
+
+    margin: 8px;
+
+    font-size:
+        clamp(
+            15px,
+            4vw,
+            18px
+        );
+
+    line-height: 1.5;
+
+}
+
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+button {
+
+    margin-top: 25px;
+
+    padding:
+        15px 35px;
+
+    min-width: 160px;
+
+    min-height: 54px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #ffcc00;
+
+    color: #111;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+}
+
+
+button:active {
+
+    transform: scale(.95);
+
+    background: #fff;
+
+}
+
+
+/* =====================================================
+   MOBILE STEUERUNG
+===================================================== */
+
+#controls {
+
+    position: absolute;
+
+    bottom:
+        calc(
+            12px +
+            env(safe-area-inset-bottom)
+        );
+
+    left: 0;
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding:
+        0
+        calc(
+            15px +
+            env(safe-area-inset-right)
+        )
+        0
+        calc(
+            15px +
+            env(safe-area-inset-left)
+        );
+
+    z-index: 30;
+
+    pointer-events: none;
+
+}
+
+
+.control {
+
+    width: 76px;
+
+    height: 76px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid white;
+
+    background:
+        rgba(0,0,0,.55);
+
+    color: white;
+
+    font-size: 35px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: auto;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+
+    -webkit-touch-callout: none;
+
+    touch-action: none;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,.4);
+
+}
+
+
+.control.active {
+
+    background:
+        rgba(255,204,0,.75);
+
+    color: #111;
+
+    transform: scale(.92);
+
+}
+
+
+/* =====================================================
+   KLEINE HANDYS
+===================================================== */
+
+@media(max-width:380px) {
+
+    .control {
+
+        width: 64px;
+
+        height: 64px;
+
+        font-size: 28px;
+
+    }
+
+}
+
+
+/* =====================================================
+   QUERFORMAT
+===================================================== */
+
+@media(max-height:500px) {
+
+    #game {
+
+        width: min(
+            100vw,
+            700px
+        );
+
+    }
+
+
+    .control {
+
+        width: 60px;
+
+        height: 60px;
+
+        font-size: 27px;
+
+    }
+
+
+    #controls {
+
+        bottom:
+            calc(
+                8px +
+                env(safe-area-inset-bottom)
+            );
+
+    }
+
+
+    #player {
+
+        bottom: 25px;
+
+    }
+
+}
+
+
+/* =====================================================
+   DESKTOP
+===================================================== */
+
+@media(min-width:801px) {
+
+    #game {
+
+        height: min(
+            100vh,
+            800px
+        );
+
+    }
+
+    #controls {
+
+        display: none;
+
+    }
+
+}
+
+
+/* =====================================================
+   TOUCH / AUSWAHL
+===================================================== */
+
+canvas,
+button,
+#game,
+.control {
+
+    -webkit-user-select: none;
+
+    user-select: none;
+
+    -webkit-touch-callout: none;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="game">
+
+
+    <div class="side left"></div>
+
+    <div class="side right"></div>
+
+
+    <div id="road">
+
+        <div class="line" style="top:-80px;"></div>
+        <div class="line right" style="top:-80px;"></div>
+
+        <div class="line" style="top:100px;"></div>
+        <div class="line right" style="top:100px;"></div>
+
+        <div class="line" style="top:280px;"></div>
+        <div class="line right" style="top:280px;"></div>
+
+        <div class="line" style="top:460px;"></div>
+        <div class="line right" style="top:460px;"></div>
+
+        <div class="line" style="top:640px;"></div>
+        <div class="line right" style="top:640px;"></div>
+
+    </div>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        Punkte:
+        <span id="score">
+            0
+        </span>
+
+        <div id="speed">
+
+            Geschwindigkeit:
+
+            <span id="speedValue">
+                5
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- SOUND BUTTON -->
+
+    <button
+        id="soundButton"
+        aria-label="Sound an oder aus">
+
+        🔊
+
+    </button>
+
+
+    <!-- PLAYER -->
+
+    <div id="player">
+
+        <div class="window"></div>
+
+    </div>
+
+
+    <!-- MOBILE CONTROLS -->
+
+    <div id="controls">
+
+        <div
+            class="control"
+            id="leftBtn">
+
+            ◀
+
+        </div>
+
+
+        <div
+            class="control"
+            id="rightBtn">
+
+            ▶
+
+        </div>
+
+    </div>
+
+
+    <!-- MENU -->
+
+    <div id="menu">
+
+        <h1>
+            TURBO RACER
+        </h1>
+
+
+        <p id="message">
+
+            Weiche den anderen Autos aus!
+
+        </p>
+
+
+        <p>
+
+            <b>PC:</b>
+            ← → oder A / D
+
+        </p>
+
+
+        <p>
+
+            <b>Handy:</b>
+            ◀ und ▶ gedrückt halten
+
+        </p>
+
+
+        <p>
+
+            🔊 Sound und Musik inklusive
+
+        </p>
+
+
+        <button id="startButton">
+
+            START
+
+        </button>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   ELEMENTE
+===================================================== */
+
+const game =
+    document.getElementById(
+        "game"
+    );
+
+
+const player =
+    document.getElementById(
+        "player"
+    );
+
+
+const scoreText =
+    document.getElementById(
+        "score"
+    );
+
+
+const speedText =
+    document.getElementById(
+        "speedValue"
+    );
+
+
+const menu =
+    document.getElementById(
+        "menu"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+
+const leftBtn =
+    document.getElementById(
+        "leftBtn"
+    );
+
+
+const rightBtn =
+    document.getElementById(
+        "rightBtn"
+    );
+
+
+const soundButton =
+    document.getElementById(
+        "soundButton"
+    );
+
+
+/* =====================================================
+   SPIELVARIABLEN
+===================================================== */
+
+let playerX = 0;
+
+let score = 0;
+
+let speed = 5;
+
+let gameRunning = false;
+
+let enemies = [];
+
+let keys = {};
+
+let spawnTimer = null;
+
+let animationId = null;
+
+
+/* =====================================================
+   AUDIO SYSTEM
+===================================================== */
+
+let audioContext = null;
+
+let masterGain = null;
+
+let musicGain = null;
+
+let sfxGain = null;
+
+let engineOscillator = null;
+
+let engineGain = null;
+
+let musicTimer = null;
+
+let soundEnabled = true;
+
+
+/*
+   Audio-System initialisieren
+*/
+
+function initAudio(){
+
+    if(audioContext)
+        return;
+
+
+    const AudioCtx =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+
+    if(!AudioCtx)
+        return;
+
+
+    audioContext =
+        new AudioCtx();
+
+
+    /*
+       Master-Lautstärke
+    */
+
+    masterGain =
+        audioContext.createGain();
+
+    masterGain.gain.value =
+        0.65;
+
+
+    /*
+       Musik-Lautstärke
+    */
+
+    musicGain =
+        audioContext.createGain();
+
+    musicGain.gain.value =
+        0.13;
+
+
+    /*
+       Effekt-Lautstärke
+    */
+
+    sfxGain =
+        audioContext.createGain();
+
+    sfxGain.gain.value =
+        0.35;
+
+
+    musicGain.connect(
+        masterGain
+    );
+
+    sfxGain.connect(
+        masterGain
+    );
+
+    masterGain.connect(
+        audioContext.destination
+    );
+
+}
+
+
+/*
+   Audio freischalten
+*/
+
+async function unlockAudio(){
+
+    initAudio();
+
+    if(!audioContext)
+        return;
+
+
+    if(
+        audioContext.state ===
+        "suspended"
+    ){
+
+        await audioContext.resume();
+
+    }
+
+}
+
+
+/* =====================================================
+   SOUND EFFECT
+===================================================== */
+
+function playTone(
+    frequency,
+    duration,
+    type="sine",
+    volume=.15,
+    endFrequency=null
+){
+
+    if(
+        !soundEnabled ||
+        !audioContext ||
+        !sfxGain
+    )
+        return;
+
+
+    const oscillator =
+        audioContext.createOscillator();
+
+
+    const gain =
+        audioContext.createGain();
+
+
+    oscillator.type =
+        type;
+
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        audioContext.currentTime
+    );
+
+
+    if(endFrequency){
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            Math.max(20,endFrequency),
+            audioContext.currentTime+
+            duration
+        );
+
+    }
+
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        audioContext.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        audioContext.currentTime+
+        .01
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        audioContext.currentTime+
+        duration
+    );
+
+
+    oscillator.connect(gain);
+
+    gain.connect(sfxGain);
+
+
+    oscillator.start();
+
+    oscillator.stop(
+        audioContext.currentTime+
+        duration+
+        .02
+    );
+
+}
+
+
+/* =====================================================
+   START SOUND
+===================================================== */
+
+function startSound(){
+
+    playTone(
+        220,
+        .12,
+        "square",
+        .12,
+        440
+    );
+
+
+    setTimeout(
+        ()=>{
+            playTone(
+                440,
+                .16,
+                "square",
+                .12,
+                660
+            );
+        },
+        100
+    );
+
+
+    setTimeout(
+        ()=>{
+            playTone(
+                660,
+                .25,
+                "square",
+                .12,
+                880
+            );
+        },
+        220
+    );
+
+}
+
+
+/* =====================================================
+   CRASH SOUND
+===================================================== */
+
+function crashSound(){
+
+    if(
+        !soundEnabled ||
+        !audioContext
+    )
+        return;
+
+
+    playTone(
+        130,
+        .5,
+        "sawtooth",
+        .28,
+        35
+    );
+
+
+    setTimeout(
+        ()=>{
+            playTone(
+                70,
+                .4,
+                "square",
+                .2,
+                25
+            );
+        },
+        70
+    );
+
+
+    /*
+       Rauschartiger Crash
+    */
+
+    const bufferSize =
+        audioContext.sampleRate *
+        .25;
+
+
+    const buffer =
+        audioContext.createBuffer(
+            1,
+            bufferSize,
+            audioContext.sampleRate
+        );
+
+
+    const data =
+        buffer.getChannelData(0);
+
+
+    for(
+        let i=0;
+        i<bufferSize;
+        i++
+    ){
+
+        data[i] =
+            (Math.random()*2-1) *
+            (1-i/bufferSize);
+
+    }
+
+
+    const source =
+        audioContext.createBufferSource();
+
+
+    const gain =
+        audioContext.createGain();
+
+
+    source.buffer=buffer;
+
+    gain.gain.value=.18;
+
+    source.connect(gain);
+
+    gain.connect(sfxGain);
+
+    source.start();
+
+}
+
+
+/* =====================================================
+   PUNKT SOUND
+===================================================== */
+
+function pointSound(){
+
+    playTone(
+        520,
+        .08,
+        "sine",
+        .08,
+        720
+    );
+
+}
+
+
+/* =====================================================
+   ENGINE SOUND
+===================================================== */
+
+function startEngine(){
+
+    if(
+        !soundEnabled ||
+        !audioContext ||
+        engineOscillator
+    )
+        return;
+
+
+    engineOscillator =
+        audioContext.createOscillator();
+
+
+    engineGain =
+        audioContext.createGain();
+
+
+    engineOscillator.type =
+        "sawtooth";
+
+
+    engineOscillator.frequency.value =
+        75;
+
+
+    engineGain.gain.value =
+        0.018;
+
+
+    engineOscillator.connect(
+        engineGain
+    );
+
+
+    engineGain.connect(
+        sfxGain
+    );
+
+
+    engineOscillator.start();
+
+}
+
+
+function updateEngine(){
+
+    if(
+        !engineOscillator ||
+        !audioContext
+    )
+        return;
+
+
+    const targetFrequency =
+        65+
+        speed*14;
+
+
+    engineOscillator.frequency.setTargetAtTime(
+        targetFrequency,
+        audioContext.currentTime,
+        .05
+    );
+
+
+    if(engineGain){
+
+        const volume =
+            .012+
+            speed*.003;
+
+        engineGain.gain.setTargetAtTime(
+            volume,
+            audioContext.currentTime,
+            .08
+        );
+
+    }
+
+}
+
+
+function stopEngine(){
+
+    if(
+        engineOscillator &&
+        audioContext
+    ){
+
+        try{
+
+            engineOscillator.stop();
+
+        }
+        catch(e){}
+
+    }
+
+
+    engineOscillator=null;
+
+    engineGain=null;
+
+}
+
+
+/* =====================================================
+   MUSIK
+===================================================== */
+
+const melody = [
+
+    261.63,
+    329.63,
+    392.00,
+    523.25,
+
+    392.00,
+    329.63,
+    293.66,
+    392.00,
+
+    261.63,
+    329.63,
+    440.00,
+    523.25,
+
+    440.00,
+    392.00,
+    329.63,
+    293.66
+
+];
+
+
+let melodyIndex=0;
+
+
+function musicNote(){
+
+    if(
+        !soundEnabled ||
+        !audioContext ||
+        !musicGain ||
+        !gameRunning
+    )
+        return;
+
+
+    const frequency =
+        melody[
+            melodyIndex %
+            melody.length
+        ];
+
+
+    melodyIndex++;
+
+
+    const osc =
+        audioContext.createOscillator();
+
+
+    const gain =
+        audioContext.createGain();
+
+
+    osc.type="triangle";
+
+
+    osc.frequency.value =
+        frequency;
+
+
+    gain.gain.setValueAtTime(
+        .0001,
+        audioContext.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        .055,
+        audioContext.currentTime+.03
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        audioContext.currentTime+.32
+    );
+
+
+    osc.connect(gain);
+
+    gain.connect(musicGain);
+
+
+    osc.start();
+
+    osc.stop(
+        audioContext.currentTime+
+        .35
+    );
+
+}
+
+
+function startMusic(){
+
+    stopMusic();
+
+
+    melodyIndex=0;
+
+
+    if(
+        !soundEnabled ||
+        !audioContext
+    )
+        return;
+
+
+    musicTimer =
+        setInterval(
+            musicNote,
+            300
+        );
+
+
+    musicNote();
+
+}
+
+
+function stopMusic(){
+
+    if(musicTimer){
+
+        clearInterval(
+            musicTimer
+        );
+
+        musicTimer=null;
+
+    }
+
+}
+
+
+/* =====================================================
+   SOUND EIN/AUS
+===================================================== */
+
+async function toggleSound(){
+
+    await unlockAudio();
+
+
+    soundEnabled =
+        !soundEnabled;
+
+
+    if(soundEnabled){
+
+        soundButton.textContent =
+            "🔊";
+
+
+        startMusic();
+
+
+        if(gameRunning){
+
+            startEngine();
+
+        }
+
+    }else{
+
+        soundButton.textContent =
+            "🔇";
+
+
+        stopMusic();
+
+        stopEngine();
+
+    }
+
+}
+
+
+soundButton.addEventListener(
+    "click",
+    toggleSound
+);
+
+
+soundButton.addEventListener(
+    "touchend",
+    function(event){
+
+        event.preventDefault();
+
+        toggleSound();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+/* =====================================================
+   SPIELGRÖSSE
+===================================================== */
+
+const PLAYER_WIDTH=45;
+
+const ROAD_LEFT_RATIO=.125;
+
+const ROAD_RIGHT_RATIO=.875;
+
+
+function getRoadLeft(){
+
+    return game.clientWidth*
+        ROAD_LEFT_RATIO;
+
+}
+
+
+function getRoadRight(){
+
+    return game.clientWidth*
+        ROAD_RIGHT_RATIO;
+
+}
+
+
+/* =====================================================
+   SPIELER POSITION
+===================================================== */
+
+function centerPlayer(){
+
+    playerX =
+        (game.clientWidth-
+        PLAYER_WIDTH)/2;
+
+
+    player.style.left =
+        playerX+"px";
+
+
+    player.style.transform =
+        "none";
+
+}
+
+
+/* =====================================================
+   TASTATUR
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        const key =
+            event.key.toLowerCase();
+
+
+        keys[key]=true;
+
+
+        if(
+            key==="arrowleft" ||
+            key==="arrowright" ||
+            key===" "
+        ){
+
+            event.preventDefault();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keyup",
+    function(event){
+
+        const key =
+            event.key.toLowerCase();
+
+
+        keys[key]=false;
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE BUTTONS
+===================================================== */
+
+function setupControl(
+    button,
+    key
+){
+
+    button.addEventListener(
+        "pointerdown",
+        function(event){
+
+            event.preventDefault();
+
+            keys[key]=true;
+
+            button.classList.add(
+                "active"
+            );
+
+
+            try{
+
+                button.setPointerCapture(
+                    event.pointerId
+                );
+
+            }
+            catch(error){}
+
+        }
+    );
+
+
+    function release(event){
+
+        event.preventDefault();
+
+        keys[key]=false;
+
+        button.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    button.addEventListener(
+        "pointerup",
+        release
+    );
+
+
+    button.addEventListener(
+        "pointercancel",
+        release
+    );
+
+
+    button.addEventListener(
+        "lostpointercapture",
+        function(){
+
+            keys[key]=false;
+
+            button.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+}
+
+
+setupControl(
+    leftBtn,
+    "arrowleft"
+);
+
+
+setupControl(
+    rightBtn,
+    "arrowright"
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+async function startGame(){
+
+    await unlockAudio();
+
+
+    cancelAnimationFrame(
+        animationId
+    );
+
+
+    clearInterval(
+        spawnTimer
+    );
+
+
+    enemies.forEach(
+        enemy=>{
+
+            enemy.element.remove();
+
+        }
+    );
+
+
+    enemies=[];
+
+
+    centerPlayer();
+
+
+    score=0;
+
+    speed=5;
+
+
+    scoreText.textContent=
+        score;
+
+
+    speedText.textContent=
+        speed;
+
+
+    gameRunning=true;
+
+
+    menu.style.display=
+        "none";
+
+
+    startSound();
+
+
+    if(soundEnabled){
+
+        startEngine();
+
+        startMusic();
+
+    }
+
+
+    spawnTimer=
+        setInterval(
+            createEnemy,
+            1000
+        );
+
+
+    gameLoop();
+
+}
+
+
+/* =====================================================
+   START BUTTON
+===================================================== */
+
+startButton.addEventListener(
+    "click",
+    startGame
+);
+
+
+startButton.addEventListener(
+    "touchend",
+    function(event){
+
+        event.preventDefault();
+
+        startGame();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+/* =====================================================
+   GEGNER ERSTELLEN
+===================================================== */
+
+function createEnemy(){
+
+    if(!gameRunning)
+        return;
+
+
+    const enemy =
+        document.createElement(
+            "div"
+        );
+
+
+    enemy.className=
+        "enemy";
+
+
+    const roadLeft=
+        getRoadLeft();
+
+
+    const roadWidth=
+        getRoadRight()-
+        roadLeft;
+
+
+    const lanes=[
+
+        roadLeft+25,
+
+        roadLeft+
+        roadWidth*.25,
+
+        roadLeft+
+        roadWidth*.5,
+
+        roadLeft+
+        roadWidth*.75,
+
+        roadLeft+
+        roadWidth-70
+
+    ];
+
+
+    const lane=
+        lanes[
+            Math.floor(
+                Math.random()*
+                lanes.length
+            )
+        ];
+
+
+    enemy.style.left=
+        lane+"px";
+
+
+    enemy.style.top=
+        "-100px";
+
+
+    game.appendChild(
+        enemy
+    );
+
+
+    enemies.push({
+
+        element:enemy,
+
+        x:lane,
+
+        y:-100
+
+    });
+
+}
+
+
+/* =====================================================
+   KOLLISION
+===================================================== */
+
+function collision(a,b){
+
+    const aRect=
+        a.getBoundingClientRect();
+
+
+    const bRect=
+        b.getBoundingClientRect();
+
+
+    return !(
+        aRect.bottom<bRect.top ||
+
+        aRect.top>bRect.bottom ||
+
+        aRect.right<bRect.left ||
+
+        aRect.left>bRect.right
+    );
+
+}
+
+
+/* =====================================================
+   STRASSENLINIEN
+===================================================== */
+
+function updateRoadLines(){
+
+    const lines=
+        document.querySelectorAll(
+            ".line"
+        );
+
+
+    lines.forEach(
+        line=>{
+
+            let top=
+                parseFloat(
+                    line.style.top
+                );
+
+
+            top+=speed;
+
+
+            if(
+                top>
+                game.clientHeight
+            ){
+
+                top=-80;
+
+            }
+
+
+            line.style.top=
+                top+"px";
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SPIELER
+===================================================== */
+
+function updatePlayer(){
+
+    const moveSpeed=7;
+
+
+    if(
+        keys["arrowleft"] ||
+        keys["a"]
+    ){
+
+        playerX-=moveSpeed;
+
+    }
+
+
+    if(
+        keys["arrowright"] ||
+        keys["d"]
+    ){
+
+        playerX+=moveSpeed;
+
+    }
+
+
+    const roadLeft=
+        getRoadLeft();
+
+
+    const roadRight=
+        getRoadRight();
+
+
+    const minX=
+        roadLeft;
+
+
+    const maxX=
+        roadRight-
+        PLAYER_WIDTH;
+
+
+    if(playerX<minX){
+
+        playerX=minX;
+
+    }
+
+
+    if(playerX>maxX){
+
+        playerX=maxX;
+
+    }
+
+
+    player.style.left=
+        playerX+"px";
+
+
+    player.style.transform=
+        "none";
+
+
+    updateEngine();
+
+}
+
+
+/* =====================================================
+   GEGNER
+===================================================== */
+
+function updateEnemies(){
+
+    for(
+        let i=
+            enemies.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const enemy=
+            enemies[i];
+
+
+        enemy.y+=speed;
+
+
+        enemy.element.style.top=
+            enemy.y+"px";
+
+
+        if(
+            collision(
+                player,
+                enemy.element
+            )
+        ){
+
+            gameOver();
+
+            return;
+
+        }
+
+
+        if(
+            enemy.y>
+            game.clientHeight+20
+        ){
+
+            enemy.element.remove();
+
+
+            enemies.splice(
+                i,
+                1
+            );
+
+
+            score++;
+
+
+            scoreText.textContent=
+                score;
+
+
+            pointSound();
+
+
+            if(
+                score%10===0
+            ){
+
+                speed+=1;
+
+
+                speedText.textContent=
+                    speed;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   GAME LOOP
+===================================================== */
+
+function gameLoop(){
+
+    if(!gameRunning)
+        return;
+
+
+    updatePlayer();
+
+
+    updateRoadLines();
+
+
+    updateEnemies();
+
+
+    animationId=
+        requestAnimationFrame(
+            gameLoop
+        );
+
+}
+
+
+/* =====================================================
+   GAME OVER
+===================================================== */
+
+function gameOver(){
+
+    gameRunning=false;
+
+
+    cancelAnimationFrame(
+        animationId
+    );
+
+
+    clearInterval(
+        spawnTimer
+    );
+
+
+    stopMusic();
+
+
+    stopEngine();
+
+
+    crashSound();
+
+
+    keys={};
+
+
+    leftBtn.classList.remove(
+        "active"
+    );
+
+
+    rightBtn.classList.remove(
+        "active"
+    );
+
+
+    message.innerHTML=
+        "💥 GAME OVER!<br><br>"+
+        "Du hast <strong>"+
+        score+
+        "</strong> Punkte erreicht.";
+
+
+    startButton.textContent=
+        "NOCHMAL SPIELEN";
+
+
+    menu.style.display=
+        "flex";
+
+}
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        if(!gameRunning){
+
+            centerPlayer();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ORIENTATION
+===================================================== */
+
+window.addEventListener(
+    "orientationchange",
+    function(){
+
+        setTimeout(
+            function(){
+
+                if(!gameRunning){
+
+                    centerPlayer();
+
+                }
+
+            },
+            150
+        );
+
+    }
+);
+
+
+/* =====================================================
+   INITIALISIERUNG
+===================================================== */
+
+centerPlayer();
+
+</script>
+
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Turbo Racer 🎵</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #111;
+    font-family: Arial, sans-serif;
+    touch-action: none;
+}
+
+#game {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 100vh;
+    margin: auto;
+    overflow: hidden;
+    background: #222;
+}
+
+/* Straße */
+#road {
+    position: absolute;
+    left: 12.5%;
+    top: 0;
+    width: 75%;
+    height: 100%;
+    background:
+        linear-gradient(
+            90deg,
+            #333 0%,
+            #3d3d3d 50%,
+            #333 100%
+        );
+    border-left: 8px solid #ddd;
+    border-right: 8px solid #ddd;
+}
+
+/* Seiten */
+.side {
+    position: absolute;
+    top: 0;
+    width: 12.5%;
+    height: 100%;
+    background: #087a26;
+}
+
+.side.left {
+    left: 0;
+}
+
+.side.right {
+    right: 0;
+}
+
+/* Fahrbahnmarkierungen */
+.line {
+    position: absolute;
+    left: 50%;
+    width: 7px;
+    height: 80px;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 5px;
+    opacity: .9;
+}
+
+/* HUD */
+#hud {
+    position: absolute;
+    z-index: 20;
+    top: calc(10px + env(safe-area-inset-top));
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 2px 2px 3px #000;
+}
+
+/* Musik Button */
+#soundButton {
+    position: absolute;
+    z-index: 30;
+    right: 12px;
+    top: calc(48px + env(safe-area-inset-top));
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,.65);
+    color: white;
+    font-size: 22px;
+}
+
+/* Spieler */
+#player {
+    position: absolute;
+    z-index: 10;
+    width: 45px;
+    height: 80px;
+    bottom: 100px;
+    left: calc(50% - 22.5px);
+    background: #e21b23;
+    border-radius: 9px;
+    border: 3px solid #111;
+    box-shadow: 0 0 12px rgba(255,0,0,.6);
+}
+
+/* Auto Details */
+#player::before,
+#player::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 18px;
+    background: #111;
+    top: 12px;
+    border-radius: 3px;
+}
+
+#player::before {
+    left: -7px;
+}
+
+#player::after {
+    right: -7px;
+}
+
+.enemy {
+    position: absolute;
+    z-index: 9;
+    width: 45px;
+    height: 80px;
+    background: #168cff;
+    border-radius: 9px;
+    border: 3px solid #111;
+    box-shadow: 0 0 10px rgba(0,100,255,.5);
+}
+
+/* Startmenü */
+#menu {
+    position: absolute;
+    z-index: 100;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.82);
+    color: white;
+    text-align: center;
+}
+
+#menu h1 {
+    margin: 0 0 10px;
+    font-size: 42px;
+}
+
+#menu p {
+    margin: 5px 20px 25px;
+    color: #ddd;
+}
+
+#startButton {
+    border: none;
+    border-radius: 12px;
+    padding: 15px 35px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #e21b23;
+    color: white;
+    box-shadow: 0 5px 0 #8e0d12;
+}
+
+/* Touch-Steuerung */
+#controls {
+    position: absolute;
+    z-index: 50;
+    left: 0;
+    right: 0;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.control {
+    width: 90px;
+    height: 65px;
+    border: none;
+    border-radius: 16px;
+    background: rgba(0,0,0,.65);
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.control:active {
+    background: rgba(255,255,255,.25);
+}
+
+/* Desktop */
+@media (min-width: 700px) {
+    #controls {
+        display: none;
+    }
+}
+
+/* Landschaft */
+@media (orientation: landscape) and (max-height: 500px) {
+    #controls {
+        bottom: 8px;
+    }
+
+    .control {
+        width: 80px;
+        height: 55px;
+    }
+
+    #player {
+        bottom: 80px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div class="side left"></div>
+    <div class="side right"></div>
+
+    <div id="road">
+        <div class="line" style="top:-100px"></div>
+        <div class="line" style="top:100px"></div>
+        <div class="line" style="top:300px"></div>
+        <div class="line" style="top:500px"></div>
+        <div class="line" style="top:700px"></div>
+    </div>
+
+    <div id="hud">
+        <div>🏁 Punkte: <span id="score">0</span></div>
+        <div>⚡ <span id="speedText">1</span>x</div>
+    </div>
+
+    <button id="soundButton">🔊</button>
+
+    <div id="player"></div>
+
+    <div id="controls">
+        <button class="control" id="leftButton">◀</button>
+        <button class="control" id="rightButton">▶</button>
+    </div>
+
+    <div id="menu">
+        <h1>🏎️ Turbo Racer</h1>
+        <p>
+            Weiche den Autos aus und fahre so weit wie möglich!
+            <br>
+            🎵 Dauerhafte Hintergrundmusik
+        </p>
+
+        <button id="startButton">START</button>
+    </div>
+
+</div>
+
+<script>
+/* =========================
+   SPIEL
+========================= */
+
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreElement = document.getElementById("score");
+const speedText = document.getElementById("speedText");
+const menu = document.getElementById("menu");
+const startButton = document.getElementById("startButton");
+const soundButton = document.getElementById("soundButton");
+
+const lines = document.querySelectorAll(".line");
+
+let playerX = 50;
+let score = 0;
+let speed = 5;
+let gameRunning = false;
+
+let enemies = [];
+let spawnTimer = 0;
+let animationId;
+
+let leftPressed = false;
+let rightPressed = false;
+
+
+/* =========================
+   AUDIO
+========================= */
+
+let audioContext = null;
+
+let masterGain;
+let musicGain;
+let sfxGain;
+
+let musicTimer = null;
+let musicStep = 0;
+
+let engineOscillator = null;
+let engineGain = null;
+
+let soundEnabled = true;
+
+
+/* Audio initialisieren */
+function initAudio() {
+
+    if (audioContext) return;
+
+    audioContext = new (
+        window.AudioContext ||
+        window.webkitAudioContext
+    )();
+
+    masterGain = audioContext.createGain();
+    musicGain = audioContext.createGain();
+    sfxGain = audioContext.createGain();
+
+    masterGain.gain.value = 0.65;
+    musicGain.gain.value = 0.25;
+    sfxGain.gain.value = 0.4;
+
+    musicGain.connect(masterGain);
+    sfxGain.connect(masterGain);
+    masterGain.connect(audioContext.destination);
+}
+
+
+/* Audio entsperren */
+async function unlockAudio() {
+
+    initAudio();
+
+    if (audioContext.state === "suspended") {
+        await audioContext.resume();
+    }
+}
+
+
+/* =========================
+   TÖNE
+========================= */
+
+function playTone(
+    frequency,
+    duration,
+    type = "sine",
+    volume = 0.15,
+    destination = sfxGain
+) {
+
+    if (!soundEnabled || !audioContext) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        audioContext.currentTime + 0.01
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        audioContext.currentTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration + 0.03);
+}
+
+
+/* Startsound */
+function startSound() {
+
+    playTone(330, .12, "square", .12);
+    setTimeout(() => {
+        playTone(440, .12, "square", .12);
+    }, 100);
+
+    setTimeout(() => {
+        playTone(660, .18, "square", .14);
+    }, 200);
+}
+
+
+/* Punktesound */
+function pointSound() {
+
+    playTone(700, .08, "square", .08);
+
+    setTimeout(() => {
+        playTone(950, .1, "square", .08);
+    }, 70);
+}
+
+
+/* Crash-Sound */
+function crashSound() {
+
+    if (!soundEnabled || !audioContext) return;
+
+    playTone(90, .5, "sawtooth", .35);
+
+    const bufferSize = audioContext.sampleRate * .35;
+    const buffer = audioContext.createBuffer(
+        1,
+        bufferSize,
+        audioContext.sampleRate
+    );
+
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = audioContext.createBufferSource();
+    const gain = audioContext.createGain();
+
+    noise.buffer = buffer;
+
+    gain.gain.setValueAtTime(.3, audioContext.currentTime);
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioContext.currentTime + .35
+    );
+
+    noise.connect(gain);
+    gain.connect(sfxGain);
+
+    noise.start();
+}
+
+
+/* =========================
+   MOTOR
+========================= */
+
+function startEngine() {
+
+    if (!soundEnabled || !audioContext) return;
+
+    stopEngine();
+
+    engineOscillator = audioContext.createOscillator();
+    engineGain = audioContext.createGain();
+
+    engineOscillator.type = "sawtooth";
+    engineOscillator.frequency.value = 65;
+
+    engineGain.gain.value = 0.035;
+
+    engineOscillator.connect(engineGain);
+    engineGain.connect(sfxGain);
+
+    engineOscillator.start();
+}
+
+
+function updateEngine() {
+
+    if (!engineOscillator || !audioContext) return;
+
+    engineOscillator.frequency.setTargetAtTime(
+        55 + speed * 12,
+        audioContext.currentTime,
+        .05
+    );
+}
+
+
+function stopEngine() {
+
+    if (engineOscillator) {
+
+        try {
+            engineOscillator.stop();
+        } catch (e) {}
+
+        engineOscillator.disconnect();
+        engineOscillator = null;
+    }
+
+    engineGain = null;
+}
+
+
+/* =========================
+   DAUER-MUSIK
+========================= */
+
+/*
+   Eine kleine elektronische Melodie.
+   Sie wird ständig wiederholt.
+*/
+
+const melody = [
+    261.63,
+    329.63,
+    392.00,
+    329.63,
+
+    293.66,
+    349.23,
+    440.00,
+    349.23,
+
+    261.63,
+    329.63,
+    392.00,
+    523.25,
+
+    440.00,
+    392.00,
+    329.63,
+    293.66
+];
+
+
+function musicNote() {
+
+    if (!soundEnabled || !audioContext) return;
+
+    const frequency = melody[musicStep % melody.length];
+
+    musicStep++;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.value = frequency;
+
+    const now = audioContext.currentTime;
+
+    gain.gain.setValueAtTime(0.0001, now);
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.08,
+        now + .025
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + .25
+    );
+
+    oscillator.connect(gain);
+    gain.connect(musicGain);
+
+    oscillator.start(now);
+    oscillator.stop(now + .28);
+}
+
+
+function startMusic() {
+
+    if (!audioContext) return;
+
+    stopMusic();
+
+    musicStep = 0;
+
+    /*
+       280 ms pro Note.
+       Nach der letzten Note beginnt
+       die Melodie automatisch wieder
+       von vorne.
+    */
+
+    musicNote();
+
+    musicTimer = setInterval(() => {
+        musicNote();
+    }, 280);
+}
+
+
+function stopMusic() {
+
+    if (musicTimer) {
+        clearInterval(musicTimer);
+        musicTimer = null;
+    }
+}
+
+
+/* =========================
+   SOUND EIN/AUS
+========================= */
+
+function toggleSound() {
+
+    soundEnabled = !soundEnabled;
+
+    if (soundEnabled) {
+
+        soundButton.textContent = "🔊";
+
+        unlockAudio().then(() => {
+            startMusic();
+            startEngine();
+        });
+
+    } else {
+
+        soundButton.textContent = "🔇";
+
+        stopMusic();
+        stopEngine();
+    }
+}
+
+
+/* =========================
+   SPIEL STARTEN
+========================= */
+
+async function startGame() {
+
+    await unlockAudio();
+
+    menu.style.display = "none";
+
+    score = 0;
+    speed = 5;
+    playerX = 50;
+
+    scoreElement.textContent = "0";
+    speedText.textContent = "1";
+
+    enemies.forEach(enemy => enemy.element.remove());
+    enemies = [];
+
+    gameRunning = true;
+
+    startSound();
+    startMusic();
+    startEngine();
+
+    spawnTimer = 0;
+
+    cancelAnimationFrame(animationId);
+
+    gameLoop();
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver() {
+
+    gameRunning = false;
+
+    stopMusic();
+    stopEngine();
+
+    crashSound();
+
+    menu.style.display = "flex";
+
+    menu.querySelector("h1").textContent = "💥 GAME OVER";
+
+    menu.querySelector("p").innerHTML =
+        "Du hast <b>" +
+        score +
+        "</b> Punkte geschafft!<br><br>" +
+        "🎵 Die Musik läuft während des Spiels dauerhaft.";
+
+    startButton.textContent = "NOCHMAL";
+}
+
+
+/* =========================
+   GEGNER
+========================= */
+
+function spawnEnemy() {
+
+    const enemy = document.createElement("div");
+
+    enemy.className = "enemy";
+
+    /*
+       Gegner bleiben auf der Straße.
+    */
+
+    const roadLeft = game.clientWidth * .125;
+    const roadWidth = game.clientWidth * .75;
+
+    const maxX = roadWidth - 45;
+
+    const x =
+        roadLeft +
+        Math.random() * maxX;
+
+    enemy.style.left = x + "px";
+    enemy.style.top = "-100px";
+
+    game.appendChild(enemy);
+
+    enemies.push({
+        element: enemy,
+        y: -100,
+        x: x
+    });
+}
+
+
+/* =========================
+   KOLLISION
+========================= */
+
+function collision(a, b) {
+
+    const r1 = a.getBoundingClientRect();
+    const r2 = b.getBoundingClientRect();
+
+    return !(
+        r1.right < r2.left ||
+        r1.left > r2.right ||
+        r1.bottom < r2.top ||
+        r1.top > r2.bottom
+    );
+}
+
+
+/* =========================
+   STRASSE BEWEGEN
+========================= */
+
+function updateRoad() {
+
+    lines.forEach(line => {
+
+        let top =
+            parseFloat(line.style.top);
+
+        top += speed;
+
+        if (top > game.clientHeight) {
+            top = -100;
+        }
+
+        line.style.top = top + "px";
+    });
+}
+
+
+/* =========================
+   SPIEL LOOP
+========================= */
+
+function gameLoop() {
+
+    if (!gameRunning) return;
+
+    updateRoad();
+
+    updateEngine();
+
+    /* Spieler bewegen */
+
+    if (leftPressed) {
+        playerX -= .8;
+    }
+
+    if (rightPressed) {
+        playerX += .8;
+    }
+
+    /*
+       Straße begrenzen
+    */
+
+    playerX = Math.max(17, Math.min(83, playerX));
+
+    player.style.left =
+        `calc(${playerX}% - 22.5px)`;
+
+
+    /* Gegner spawnen */
+
+    spawnTimer++;
+
+    if (spawnTimer > Math.max(25, 65 - speed * 4)) {
+
+        spawnEnemy();
+
+        spawnTimer = 0;
+    }
+
+
+    /* Gegner bewegen */
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
+
+        const enemy = enemies[i];
+
+        enemy.y += speed;
+
+        enemy.element.style.top =
+            enemy.y + "px";
+
+
+        /* Kollision */
+
+        if (collision(player, enemy.element)) {
+
+            gameOver();
+            return;
+        }
+
+
+        /* Gegner passiert */
+
+        if (enemy.y > game.clientHeight) {
+
+            enemy.element.remove();
+
+            enemies.splice(i, 1);
+
+            score++;
+
+            scoreElement.textContent = score;
+
+            pointSound();
+
+
+            /*
+               Geschwindigkeit erhöhen
+            */
+
+            if (score % 10 === 0) {
+
+                speed += .5;
+
+                speedText.textContent =
+                    (speed / 5).toFixed(1);
+            }
+        }
+    }
+
+
+    animationId =
+        requestAnimationFrame(gameLoop);
+}
+
+
+/* =========================
+   TASTATUR
+========================= */
+
+document.addEventListener("keydown", e => {
+
+    if (
+        e.key === "ArrowLeft" ||
+        e.key.toLowerCase() === "a"
+    ) {
+        leftPressed = true;
+    }
+
+    if (
+        e.key === "ArrowRight" ||
+        e.key.toLowerCase() === "d"
+    ) {
+        rightPressed = true;
+    }
+});
+
+
+document.addEventListener("keyup", e => {
+
+    if (
+        e.key === "ArrowLeft" ||
+        e.key.toLowerCase() === "a"
+    ) {
+        leftPressed = false;
+    }
+
+    if (
+        e.key === "ArrowRight" ||
+        e.key.toLowerCase() === "d"
+    ) {
+        rightPressed = false;
+    }
+});
+
+
+/* =========================
+   TOUCH-STEUERUNG
+========================= */
+
+function holdButton(button, direction) {
+
+    const down = e => {
+
+        e.preventDefault();
+
+        if (direction === "left") {
+            leftPressed = true;
+        }
+
+        if (direction === "right") {
+            rightPressed = true;
+        }
+    };
+
+
+    const up = e => {
+
+        e.preventDefault();
+
+        if (direction === "left") {
+            leftPressed = false;
+        }
+
+        if (direction === "right") {
+            rightPressed = false;
+        }
+    };
+
+
+    button.addEventListener("pointerdown", down);
+    button.addEventListener("pointerup", up);
+    button.addEventListener("pointercancel", up);
+    button.addEventListener("pointerleave", up);
+}
+
+
+holdButton(
+    document.getElementById("leftButton"),
+    "left"
+);
+
+holdButton(
+    document.getElementById("rightButton"),
+    "right"
+);
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+startButton.addEventListener(
+    "click",
+    startGame
+);
+
+soundButton.addEventListener(
+    "click",
+    toggleSound
+);
+
+</script>
+
+</body>
+</html>
